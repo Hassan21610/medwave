@@ -1,0 +1,8 @@
+opencv-contrib-python
+mediapipe
+numpy
+PyAutoGUI
+PyMuPDF
+PySide6
+sounddevice
+vosk

@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+
+# Local runtime data
+auth_faces/
+auth_model.yml
+auth_labels.json
+uploads/
+
+# Private/local images
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.bmp
+*.gif
+*.tif
+*.tiff
+
+# Large third-party speech model; see README for setup
+assets/vosk-model-small-en-us-0.15/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
