@@ -8,82 +8,82 @@ def app_stylesheet() -> str:
     """
     return """
     QMainWindow {
-        background: #0b1220;
-        color: #e7eefc;
+        background: #0a1522;
+        color: #eaf2ff;
         font-family: "Segoe UI";
     }
 
     /* Surfaces */
     #TopBar, #BottomBar, #Card, #Panel {
-        background: #0f1b2d;
-        border: 1px solid #1f3352;
+        background: #112031;
+        border: 1px solid #1c3a51;
         border-radius: 18px;
     }
 
     /* Titles */
     QLabel#AppTitle {
-        color: #eaf2ff;
+        color: #f2f8ff;
         font-size: 20px;
         font-weight: 900;
         letter-spacing: 0.6px;
     }
     QLabel#Subtle {
-        color: #b8c7e6;
-        font-size: 12px;
+        color: #bdd0e6;
+        font-size: 11px;
         font-weight: 700;
     }
 
     QLabel {
-        color: #dbe7ff;
+        color: #dceafe;
         font-size: 12px;
         font-weight: 700;
     }
 
     /* Buttons */
     QPushButton, QToolButton {
-        background: #152a46;
-        border: 1px solid #2a4b7a;
-        color: #eaf2ff;
-        padding: 10px 14px;
+        background: #173049;
+        border: 1px solid #2b597f;
+        color: #edf5ff;
+        padding: 9px 14px;
         border-radius: 14px;
         font-weight: 900;
         font-size: 12px;
     }
     QPushButton:hover, QToolButton:hover {
-        background: #183253;
-        border: 1px solid #3b6fb3;
+        background: #1c3a58;
+        border: 1px solid #4e86b1;
     }
     QPushButton:pressed, QToolButton:pressed {
-        background: #10243c;
+        background: #12283c;
     }
 
     /* “Primary” button look */
     QPushButton#Primary {
-        background: #1f6feb;
-        border: 1px solid #3b82f6;
+        background: #0f8b8d;
+        border: 1px solid #26a6a8;
         color: #ffffff;
     }
     QPushButton#Primary:hover {
-        background: #2b79f0;
+        background: #13979a;
     }
 
     /* Inputs */
     QLineEdit {
-        background: #0c1728;
-        border: 1px solid #223a5d;
+        background: #0d1c2e;
+        border: 1px solid #245070;
         color: #eaf2ff;
         padding: 10px 12px;
         border-radius: 14px;
         font-weight: 800;
     }
     QLineEdit:focus {
-        border: 1px solid #3b82f6;
+        border: 1px solid #26a6a8;
     }
 
     /* Combo/List widgets */
     QComboBox, QListWidget {
-        background: #0c1728;
-        border: 1px solid #223a5d;
+        background: #0d1c2e;
+        border: 1px solid #245070;
         color: #eaf2ff;
         border-radius: 14px;
         padding: 8px 10px;
@@ -94,14 +94,14 @@ def app_stylesheet() -> str:
         border-radius: 12px;
     }
     QListWidget::item:selected {
-        background: #1f6feb;
+        background: #0f8b8d;
         color: #ffffff;
     }
 
     /* Menu */
     QMenu {
-        background: #0f1b2d;
-        border: 1px solid #223a5d;
+        background: #112031;
+        border: 1px solid #245070;
         border-radius: 14px;
         padding: 8px;
     }
@@ -112,12 +112,17 @@ def app_stylesheet() -> str:
         font-weight: 900;
     }
     QMenu::item:selected {
-        background: #152a46;
-        border: 1px solid #2a4b7a;
+        background: #173049;
+        border: 1px solid #2b597f;
     }
 
     /* Scroll area */
     QScrollArea {
         border: none;
+    }
+
+    /* Soft info panel styles */
+    QFrame#Card QLabel {
+        letter-spacing: 0.2px;
     }
     """

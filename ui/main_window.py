@@ -11,7 +11,7 @@ from core.safety_layer import SafetyLayer
 from core.action_executor import ActionExecutor
 from core.voice_worker import VoiceWorker
 
-from ui.widgets import CameraPreview, ConfirmationOverlay, VoiceIndicator
+from ui.widgets import CameraPreview, ConfirmationOverlay, VoiceIndicator, GestureGuide
 from ui.pdf_viewer import PDFViewer
 from ui.theme import app_stylesheet
 
@@ -112,6 +112,9 @@ class MainWindow(QMainWindow):
         self.voice_indicator = VoiceIndicator()
         rp.addWidget(self.voice_indicator, 0)
 
+        self.gesture_guide = GestureGuide()
+        rp.addWidget(self.gesture_guide, 0)
+
         # PDF gets most space
         center_layout.addWidget(self.content_area, 10)
         center_layout.addWidget(right_panel, 4)
@@ -198,44 +201,28 @@ class MainWindow(QMainWindow):
     def on_landmarks(self, lm_data):
         gesture = self.gesture_engine.detect(lm_data)
         if not gesture:
+            self.overlay.hide()
             return
 
         self.gesture_lbl.setText(f"Gesture: {gesture}")
+        self.gesture_guide.set_last_gesture(gesture)
         decision = self.safety.evaluate(gesture)
         self.conf_lbl.setText(f"Confirmation: {decision.state}")
 
+        if decision.state == "HOLDING":
+            self.status_lbl.setText(f"Status: Hold steady... {decision.progress_pct}%")
+            self.overlay.show_message("Hold gesture steady", f"Progress: {decision.progress_pct}%")
+            return
+        if decision.state == "NEEDS_VOICE_CONFIRM":
+            self.status_lbl.setText("Status: Say 'hey health confirm zoom' to continue")
+            self.overlay.show_message("Voice confirmation needed", "Say: hey health confirm zoom")
+            return
         if decision.state != "APPROVED":
+            self.overlay.hide()
             return
 
-        # Thumbs gestures
-        if gesture == "SWIPE_RIGHT":
-            self.status_lbl.setText("Status: Next Page (👍)")
-            self.pdf_viewer.next_page()
-            return
-        if gesture == "SWIPE_LEFT":
-            self.status_lbl.setText("Status: Previous Page (👎)")
-            self.pdf_viewer.prev_page()
-            return
-
-        # Simple gestures
-        if gesture == "SCROLL_DOWN":
-            self.status_lbl.setText("Status: Scroll Down")
-            self.pdf_viewer.scroll_down()
-            return
-        if gesture == "SCROLL_UP":
-            self.status_lbl.setText("Status: Scroll Up")
-            self.pdf_viewer.scroll_up()
-            return
-        if gesture == "ZOOM_IN":
-            self.status_lbl.setText("Status: Zoom In")
-            self.pdf_viewer.zoom_in()
-            return
-        if gesture == "ZOOM_OUT":
-            self.status_lbl.setText("Status: Zoom Out")
-            self.pdf_viewer.zoom_out()
-            return
-
-        self.executor.execute_gesture(gesture, mode=self.mode)
+        self.overlay.hide()
+        self._execute_app_command(gesture, source="gesture")
 
     # -----------------------
     # Voice
@@ -243,49 +230,66 @@ class MainWindow(QMainWindow):
     @Slot(str)
     def on_voice_partial(self, text):
         self.voice_indicator.set_text(text)
+        if "voice disabled" in text.lower() or "runtime error" in text.lower():
+            self.status_lbl.setText("Status: Voice unavailable. Check microphone/model.")
 
     @Slot(str)
     def on_voice_command(self, cmd):
+        if cmd == "CONFIRM_ZOOM":
+            approved = self.safety.accept_voice(cmd)
+            if approved:
+                self.conf_lbl.setText("Confirmation: APPROVED_BY_VOICE")
+                self.overlay.hide()
+                self._execute_app_command(approved, source="voice confirm")
+            else:
+                self.status_lbl.setText("Status: No pending risky gesture to confirm")
+            return
+
+        self._execute_app_command(cmd, source="voice")
+
+    def _execute_app_command(self, cmd: str, source: str):
         if cmd == "OPEN_PDF":
-            self.status_lbl.setText("Status: Open Library (voice)")
+            self.status_lbl.setText(f"Status: Open Library ({source})")
             self.pdf_viewer.open_library_dialog()
             return
-        if cmd == "NEXT_PAGE":
-            self.status_lbl.setText("Status: Next Page (voice)")
+        if cmd in ("NEXT_PAGE", "SWIPE_RIGHT"):
+            self.status_lbl.setText(f"Status: Next Page ({source})")
             self.pdf_viewer.next_page()
             return
-        if cmd == "PREV_PAGE":
-            self.status_lbl.setText("Status: Previous Page (voice)")
+        if cmd in ("PREV_PAGE", "SWIPE_LEFT"):
+            self.status_lbl.setText(f"Status: Previous Page ({source})")
             self.pdf_viewer.prev_page()
             return
         if cmd == "ZOOM_IN":
-            self.status_lbl.setText("Status: Zoom In (voice)")
+            self.status_lbl.setText(f"Status: Zoom In ({source})")
             self.pdf_viewer.zoom_in()
             return
         if cmd == "ZOOM_OUT":
-            self.status_lbl.setText("Status: Zoom Out (voice)")
+            self.status_lbl.setText(f"Status: Zoom Out ({source})")
             self.pdf_viewer.zoom_out()
             return
         if cmd == "RESET_ZOOM":
-            self.status_lbl.setText("Status: Reset Zoom (voice)")
+            self.status_lbl.setText(f"Status: Reset Zoom ({source})")
             self.pdf_viewer.reset_zoom()
             return
         if cmd == "SCROLL_UP":
-            self.status_lbl.setText("Status: Scroll Up (voice)")
+            self.status_lbl.setText(f"Status: Scroll Up ({source})")
             self.pdf_viewer.scroll_up()
             return
         if cmd == "SCROLL_DOWN":
-            self.status_lbl.setText("Status: Scroll Down (voice)")
+            self.status_lbl.setText(f"Status: Scroll Down ({source})")
             self.pdf_viewer.scroll_down()
             return
         if cmd == "SCROLL_LEFT":
-            self.status_lbl.setText("Status: Scroll Left (voice)")
+            self.status_lbl.setText(f"Status: Scroll Left ({source})")
             self.pdf_viewer.scroll_left()
             return
         if cmd == "SCROLL_RIGHT":
-            self.status_lbl.setText("Status: Scroll Right (voice)")
+            self.status_lbl.setText(f"Status: Scroll Right ({source})")
             self.pdf_viewer.scroll_right()
             return
+
+        self.executor.execute_gesture(cmd, mode=self.mode)
 
     def closeEvent(self, event):
         try:

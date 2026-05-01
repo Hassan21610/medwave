@@ -2,7 +2,9 @@ import time
 from dataclasses import dataclass
 from core.gesture_engine import AppMode
 
-RISKY = {"FIST_ZOOM"}
+# Keep risky set empty for smoother direct gesture UX.
+# Voice-confirm flow remains available for future high-risk commands.
+RISKY = set()
 
 @dataclass
 class SafetyDecision:
@@ -65,14 +67,19 @@ class SafetyLayer:
         self._await_voice_phrase = None
         return SafetyDecision(state="APPROVED")
 
-    def accept_voice(self, cmd: str) -> bool:
+    def accept_voice(self, cmd: str):
         if not self._await_voice_phrase:
-            return False
+            return None
 
         cmd = cmd.lower().strip()
-        if cmd.startswith("confirm") and self._await_voice_phrase in cmd:
+        is_confirm = (
+            cmd == "confirm_zoom"
+            or (cmd.startswith("confirm") and self._await_voice_phrase in cmd)
+        )
+        if is_confirm and self._pending:
+            approved_gesture = self._pending
             self._await_voice_phrase = None
             self._pending = None
             self._hold_start = None
-            return True
-        return False
+            return approved_gesture
+        return None

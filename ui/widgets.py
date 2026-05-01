@@ -1,6 +1,6 @@
 import cv2
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import QLabel, QFrame, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel, QFrame, QVBoxLayout
 from PySide6.QtGui import QImage, QPixmap, QFont
 
 class CameraPreview(QLabel):
@@ -50,9 +50,7 @@ class ConfirmationOverlay(QFrame):
     def show_message(self, title, subtitle):
         self.msg.setText(title)
         self.sub.setText(subtitle)
-
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame
+        self.show()
 
 class VoiceIndicator(QFrame):
     def __init__(self):
@@ -67,27 +65,68 @@ class VoiceIndicator(QFrame):
         self.dot.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.dot.setStyleSheet("font-size: 22px; color: #3b82f6; font-weight: 900;")
 
+        self.state_lbl = QLabel("Mic: Idle")
+        self.state_lbl.setStyleSheet("color: #b8c7e6; font-size: 12px; font-weight: 800;")
+
         self.text_lbl = QLabel("Voice: -")
         self.text_lbl.setWordWrap(True)
-
-        # ✅ FORCE readable text color here (dark text on light surface)
-        # If your voice box background is light: use dark text
         self.text_lbl.setStyleSheet("""
             QLabel {
-                color: #ffffff;   /* black-ish */
+                color: #ffffff;
                 font-size: 12px;
                 font-weight: 800;
             }
         """)
 
         layout.addWidget(self.dot)
+        layout.addWidget(self.state_lbl)
         layout.addWidget(self.text_lbl)
 
     def set_text(self, text: str):
         self.text_lbl.setText(f"Voice: {text}")
+        lowered = text.lower()
+        if "error" in lowered or "disabled" in lowered:
+            self.set_error()
 
     def set_active(self, active: bool):
+        self.state_lbl.setText("Mic: Listening" if active else "Mic: Idle")
         self.dot.setStyleSheet(
             "font-size: 22px; font-weight: 900; color: #22c55e;" if active
             else "font-size: 22px; font-weight: 900; color: #3b82f6;"
         )
+
+    def set_error(self):
+        self.state_lbl.setText("Mic: Error")
+        self.dot.setStyleSheet("font-size: 22px; font-weight: 900; color: #ef4444;")
+
+
+class GestureGuide(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setObjectName("Card")
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(8)
+
+        title = QLabel("Gesture Guide")
+        title.setStyleSheet("font-size: 13px; font-weight: 900; color: #eaf2ff;")
+        layout.addWidget(title)
+
+        hints = QLabel(
+            "3 Fingers (I+M+R) -> Next Page\n"
+            "4 Fingers -> Previous Page\n"
+            "Open Palm (all 5) -> Scroll Down\n"
+            "Fist -> Scroll Up\n"
+            "One Finger -> Zoom In\n"
+            "Two Fingers -> Zoom Out"
+        )
+        hints.setStyleSheet("font-size: 11px; color: #b8c7e6; font-weight: 700;")
+        hints.setWordWrap(True)
+        layout.addWidget(hints)
+
+        self.last_lbl = QLabel("Last recognized: -")
+        self.last_lbl.setStyleSheet("font-size: 11px; color: #93c5fd; font-weight: 800;")
+        layout.addWidget(self.last_lbl)
+
+    def set_last_gesture(self, gesture: str):
+        self.last_lbl.setText(f"Last recognized: {gesture}")
