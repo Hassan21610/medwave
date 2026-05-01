@@ -4,6 +4,15 @@
 
 MedWave is a computer vision based desktop system that lets medical professionals control digital documents and imaging workflows using hand gestures instead of physical input devices. It is designed for sterile clinical environments where touching a keyboard, mouse, or screen can interrupt procedure flow and increase contamination risk.
 
+## Quick Start
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
+```
+
 ## About
 
 Gesture Healthcare Control, branded as **MedWave**, uses OpenCV, MediaPipe, PyAutoGUI, and PySide6 to capture camera input, detect hand landmarks in real time, and map predefined gestures to system actions such as scrolling, zooming, and navigating medical PDFs. The project demonstrates how AI powered human-computer interaction can improve safety, reduce dependency on assistants, and support more modern hospital workflows.
@@ -33,10 +42,10 @@ MedWave detects hand landmarks from the live camera feed and evaluates gestures 
 
 | Action | Purpose |
 | --- | --- |
-| Swipe right | Next page |
-| Swipe left | Previous page |
+| 3 fingers (index + middle + ring) | Next page |
+| 4 fingers | Previous page |
+| Open palm (all 5 fingers) | Scroll down |
 | Scroll up | Move document upward |
-| Scroll down | Move document downward |
 | Zoom in | Enlarge report or image |
 | Zoom out | Reduce zoom level |
 
@@ -114,6 +123,16 @@ Run the application:
 python main.py
 ```
 
+## Current Interaction Map
+
+- 3 fingers (index + middle + ring): next page
+- 4 fingers: previous page
+- open palm (all 5 fingers): scroll down
+- fist: scroll up
+- one finger: zoom in
+- two fingers: zoom out
+- voice wake phrase: `hey health`
+
 ## Optional Voice Model
 
 Voice commands require the Vosk small English model. Download and extract it into:
@@ -123,6 +142,13 @@ assets/vosk-model-small-en-us-0.15/
 ```
 
 If the model is not present, MedWave still runs and gesture control remains available.
+
+## Troubleshooting
+
+- Voice not working: verify the model exists at `assets/vosk-model-small-en-us-0.15/` and that your microphone is enabled.
+- Camera not detected: switch camera index in `main.py` / `ui/main_window.py` (for example, `cam_index=1`).
+- Slow or noisy gesture detection: improve lighting and keep your hand centered in the camera preview.
+- Dependency errors: run `pip install -r requirements.txt` inside your virtual environment again.
 
 ## Privacy
 
@@ -137,17 +163,16 @@ MedWave is designed to keep sensitive runtime data local. The following files an
 
 This protects face enrollment images, authentication models, uploaded clinical documents, and local assets from being published accidentally.
 
+## Roadmap
+
+- Improve gesture calibration controls from the UI
+- Add packaged installer build for easier deployment
+- Expand test coverage for gesture, voice, and safety flows
+- Add optional per-user gesture sensitivity profiles
+
 ## GitHub About Text
+Repository metadata is set to:
 
-Use this for the GitHub repository sidebar description:
-
-```text
-MedWave is a computer vision based touchless control system for sterile healthcare environments, using hand gestures to navigate medical PDFs and digital workflows without physical contact.
-```
-
-Suggested topics:
-
-```text
-computer-vision, healthcare, gesture-control, opencv, mediapipe, pyside6, touchless-interface, medical-imaging, python
-```
+- Description: `MedWave is a computer vision based touchless control system for sterile healthcare environments, using hand gestures and voice commands to navigate medical PDFs and digital workflows without physical contact.`
+- Topics: `computer-vision`, `healthcare`, `gesture-control`, `opencv`, `mediapipe`, `pyside6`, `touchless-interface`, `medical-imaging`, `python`, `human-computer-interaction`
 
