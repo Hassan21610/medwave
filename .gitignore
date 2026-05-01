@@ -24,6 +24,13 @@ uploads/
 *.tif
 *.tiff
 
+# Keep showcase assets in repository for README previews
+!docs/screenshots/
+!docs/screenshots/*.png
+!docs/screenshots/*.jpg
+!docs/screenshots/*.jpeg
+!docs/screenshots/*.webp
+
 # Large third-party speech model; see README for setup
 assets/vosk-model-small-en-us-0.15/
 

@@ -4,6 +4,12 @@
 
 MedWave is a computer vision based desktop system that lets medical professionals control digital documents and imaging workflows using hand gestures instead of physical input devices. It is designed for sterile clinical environments where touching a keyboard, mouse, or screen can interrupt procedure flow and increase contamination risk.
 
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?logo=opencv&logoColor=white)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-Hands%20Tracking-0A84FF)
+![PySide6](https://img.shields.io/badge/UI-PySide6-41CD52?logo=qt&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 ## Quick Start
 
 ```bash
@@ -16,6 +22,13 @@ python main.py
 ## About
 
 Gesture Healthcare Control, branded as **MedWave**, uses OpenCV, MediaPipe, PyAutoGUI, and PySide6 to capture camera input, detect hand landmarks in real time, and map predefined gestures to system actions such as scrolling, zooming, and navigating medical PDFs. The project demonstrates how AI powered human-computer interaction can improve safety, reduce dependency on assistants, and support more modern hospital workflows.
+
+## Showcase
+
+Add screenshots to `docs/screenshots/`, then they will render here automatically:
+
+![MedWave Main Dashboard](docs/screenshots/dashboard.png)
+![MedWave Auth Window](docs/screenshots/auth-window.png)
 
 ## The Problem
 
@@ -132,6 +145,16 @@ python main.py
 - one finger: zoom in
 - two fingers: zoom out
 - voice wake phrase: `hey health`
+
+## Demo Script (for presentations)
+
+Use this 60-90 second flow during demos:
+
+1. Start on auth window and complete face login.
+2. Open `PDF Library` and load a sample report.
+3. Show page control using 3-finger and 4-finger gestures.
+4. Show zoom and scroll gestures.
+5. Trigger 1-2 voice commands starting with `hey health`.
 
 ## Optional Voice Model
 
